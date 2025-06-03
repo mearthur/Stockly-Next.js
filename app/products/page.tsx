@@ -1,11 +1,11 @@
-import { db } from "@/app/_lib/prisma";
 import { Button } from "../_components/ui/button";
 import { PlusIcon } from "lucide-react";
 import { DataTable } from "../_components/ui/data-table";
 import { productTableColumns } from "./_components/table-columns";
+import { getProducts } from "../_data-access/product/get-products";
 
 export default async function Products() {
-  const products = await db.product.findMany({});
+  const products = await getProducts();
   return (
     <div className="spce-y-8 mx-8 my-4 mt-8 w-full rounded-lg bg-white p-8">
       <div className="flex w-full items-center justify-between pb-4">
