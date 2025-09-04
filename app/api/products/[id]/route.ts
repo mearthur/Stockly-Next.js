@@ -21,7 +21,7 @@ export async function GET(
   return Response.json(product, { status: 200 });
 }
 
-export async function DEÇETE(
+export async function DELETE(
   request: Request,
   { params }: { params: { id: string } },
 ) {
