@@ -1,4 +1,5 @@
 "use client";
+
 import { Button } from "@/app/_components/ui/button";
 import {
   Dialog,
@@ -9,10 +10,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/app/_components/ui/dialog";
-import { PlusIcon } from "lucide-react";
+import { Loader2Icon, PlusIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
@@ -24,43 +23,36 @@ import {
 import { Input } from "@/app/_components/ui/input";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { NumericFormat } from "react-number-format";
+import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  createProductSchema,
+  CreateProductSchema,
+} from "@/app/_actions/products/products";
+import { createProduct } from "@/app/_actions/products/create-products";
 
-const formSchema = z.object({
-  name: z.string().trim().min(1, {
-    message: "O nome do produto é obrigatório.",
-  }),
-  price: z.number().min(0.01, {
-    message: "O preço do produto é obrigatório.",
-  }),
-  stock: z.coerce
-    .number()
-    .positive({
-      message: "O valor do stock deve ser possitiva",
-    })
-    .int()
-    .min(0, {
-      message: "A quantidade em estoque é obrigatório.",
-    }),
-});
+export const CreateProductButton = () => {
+  const [dialogIsOpen, setDialogIsOpen] = useState(false);
 
-type FormSchema = z.infer<typeof formSchema>;
-
-export const AddProductButton = () => {
-  const form = useForm<FormSchema>({
-    shouldUnregister: true,
-    resolver: zodResolver(formSchema),
+  const form = useForm<CreateProductSchema>({
+    resolver: zodResolver(createProductSchema),
     defaultValues: {
       name: "",
       price: 0,
       stock: 1,
     },
   });
-  const onSubmit = (data: FormSchema) => {
-    console.log({ data });
+  const onSubmit = async (data: CreateProductSchema) => {
+    try {
+      await createProduct(data);
+      setDialogIsOpen(false);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
-    <Dialog>
+    <Dialog open={dialogIsOpen} onOpenChange={setDialogIsOpen}>
       <DialogTrigger asChild>
         <Button className="gap-2">
           <PlusIcon size={20} />
@@ -138,7 +130,16 @@ export const AddProductButton = () => {
                   Cancelar
                 </Button>
               </DialogClose>
-              <Button type="submit">Salvar</Button>
+              <Button
+                type="submit"
+                disabled={form.formState.isSubmitting}
+                className="gap-1.5"
+              >
+                {form.formState.isSubmitting && (
+                  <Loader2Icon className="animate-spin" size={16} />
+                )}
+                Salvar
+              </Button>
             </DialogFooter>
           </form>
         </Form>
