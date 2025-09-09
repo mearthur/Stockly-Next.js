@@ -28,8 +28,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   createProductSchema,
   CreateProductSchema,
-} from "@/app/_actions/products/products";
-import { createProduct } from "@/app/_actions/products/create-products";
+} from "@/app/_actions/products/create-products/products";
+import { createProduct } from "@/app/_actions/products/create-products/create-products";
 
 export const CreateProductButton = () => {
   const [dialogIsOpen, setDialogIsOpen] = useState(false);

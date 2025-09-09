@@ -5,7 +5,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import {
   createProductSchema,
   CreateProductSchema,
-} from "@/app/_actions/products/products";
+} from "@/app/_actions/products/create-products/products";
 
 export const createProduct = async (data: CreateProductSchema) => {
   createProductSchema.parse(data);
