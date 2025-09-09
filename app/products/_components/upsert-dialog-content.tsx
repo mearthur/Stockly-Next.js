@@ -1,10 +1,10 @@
 "use client";
 
-import { createProduct } from "@/app/_actions/products/create-products/create-products";
+import { upsertProduct } from "@/app/_actions/products/upsert-products/create-products";
 import {
-  createProductSchema,
-  CreateProductSchema,
-} from "@/app/_actions/products/create-products/products";
+  upsertProductSchema,
+  UpsertProductSchema,
+} from "@/app/_actions/products/upsert-products/products";
 import { AlertDialogHeader } from "@/app/_components/ui/alert-dialog";
 import { Button } from "@/app/_components/ui/button";
 import {
@@ -29,24 +29,29 @@ import { useForm } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
 
 interface UpsertProductDialogContentPage {
+  defaultValues?: UpsertProductSchema;
   onSuccess?: () => void;
 }
 
 export const UpsertProductContent = ({
   onSuccess,
+  defaultValues,
 }: UpsertProductDialogContentPage) => {
-  const form = useForm<CreateProductSchema>({
+  const form = useForm<UpsertProductSchema>({
     shouldUnregister: true,
-    resolver: zodResolver(createProductSchema),
-    defaultValues: {
+    resolver: zodResolver(upsertProductSchema),
+    defaultValues: defaultValues ?? {
       name: "",
       price: 0,
       stock: 1,
     },
   });
-  const onSubmit = async (data: CreateProductSchema) => {
+
+  const isEditing = !!defaultValues;
+
+  const onSubmit = async (data: UpsertProductSchema) => {
     try {
-      await createProduct(data);
+      await upsertProduct({ ...data, id: defaultValues?.id });
       onSuccess?.();
     } catch (error) {
       console.error(error);
@@ -57,7 +62,7 @@ export const UpsertProductContent = ({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <AlertDialogHeader>
-            <DialogTitle>Criar Produto</DialogTitle>
+            <DialogTitle>{isEditing ? "Editar" : "Criar"} Produto</DialogTitle>
             <DialogDescription>Insira as Informações a baixo</DialogDescription>
           </AlertDialogHeader>
           <FormField
