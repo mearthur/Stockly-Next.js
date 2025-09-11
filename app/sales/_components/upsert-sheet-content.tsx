@@ -47,6 +47,7 @@ interface SelecetedProduct {
 
 export const UpsertSheetContent = ({ productOptions, products }: UpsertSheetContentProps) => {
   const [selectedProduct, setSelectedProduct] = useState<SelecetedProduct[]>([]);
+
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,40 +55,56 @@ export const UpsertSheetContent = ({ productOptions, products }: UpsertSheetCont
       quantity: 1,
     },
   });
+
   const onSubmit = (data: FormSchema) => {
     const selectedProduct = products.find((product) => product.id === data.productId);
     if (!selectedProduct) return;
-    setSelectedProduct((currentProducts) => {
-      const existingProduct = currentProducts.find((products) => products.id === selectedProduct.id);
+    setSelectedProduct((currentProduct) => {
+      const existingProduct = currentProduct.find((product) => product.id === selectedProduct.id);
       if (existingProduct) {
-        return currentProducts.map((products) => {
-          if (products.id === selectedProduct.id) {
+        const productIsOutOfStock = existingProduct.quantity + data.quantity > selectedProduct.stock;
+        if (productIsOutOfStock) {
+          form.setError("quantity", {
+            message: "Quantidade indisponível em estoque.",
+          });
+          return currentProduct;
+        }
+        form.reset();
+        return currentProduct.map((product) => {
+          if (product.id === selectedProduct.id) {
             return {
-              ...products,
-              quantity: products.quantity + data.quantity,
+              ...product,
+              quantity: product.quantity + data.quantity,
             };
           }
-          return products;
+          return product;
         });
       }
+      const productIsOutOfStock = data.quantity > selectedProduct.stock;
+      if (productIsOutOfStock) {
+        form.setError("quantity", {
+          message: "Quantidade indisponível em estoque.",
+        });
+        return currentProduct;
+      }
+      form.reset();
       return [
-        ...currentProducts,
-        { ...selectedProduct, price: Number(selectedProduct.price), quantity: data.quantity },
+        ...currentProduct,
+        {
+          ...selectedProduct,
+          price: Number(selectedProduct.price),
+          quantity: data.quantity,
+        },
       ];
     });
-    form.reset();
   };
 
   const productsTotal = useMemo(() => {
-    return selectedProduct.reduce((acc, products) => {
-      return acc + products.price * products.quantity;
-    }, 0);
+    return selectedProduct.reduce((acc, products) => acc + products.price * products.quantity, 0);
   }, [selectedProduct]);
 
   const onDelete = (productId: string) => {
-    setSelectedProduct((currentProducts) => {
-      return currentProducts.filter((products) => products.id != productId);
-    });
+    setSelectedProduct((currentProducts) => currentProducts.filter((products) => products.id !== productId));
   };
 
   return (
