@@ -1,6 +1,4 @@
-import { AlertDialogTrigger } from "@/app/_components/ui/alert-dialog";
 import { Button } from "@/app/_components/ui/button";
-import { DialogTrigger } from "@/app/_components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
