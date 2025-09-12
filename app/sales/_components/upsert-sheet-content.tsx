@@ -118,10 +118,22 @@ export const UpsertSheetContent = ({ productOptions, products, setsheetIsOpen }:
           quantity: product.quantity,
         })),
       });
+
       toast.success("Venda realizada com sucesso!");
+
+      // limpa o formulário
+      form.reset({
+        productId: "",
+        quantity: 1,
+      });
+
+      // limpa a lista de produtos adicionados
+      setSelectedProduct([]);
+
+      // fecha o modal/sheet
       setsheetIsOpen(false);
     } catch (error) {
-      toast.error("Error ao finalizar a venda.");
+      toast.error("Erro ao finalizar a venda.");
     }
   };
 
