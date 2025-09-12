@@ -25,6 +25,8 @@ import z from "zod";
 import { SalesTableDropdownMenu } from "./table-dropdown-menu";
 import { createSale } from "@/app/_actions/sale/crete-sale";
 import { toast } from "sonner";
+import { useAction } from "next-safe-action/hooks";
+import { flattenValidationErrors } from "next-safe-action";
 
 const formSchema = z.object({
   productId: z.string().uuid({
@@ -50,6 +52,17 @@ interface SelecetedProduct {
 
 export const UpsertSheetContent = ({ productOptions, products, setsheetIsOpen }: UpsertSheetContentProps) => {
   const [selectedProduct, setSelectedProduct] = useState<SelecetedProduct[]>([]);
+
+  const { execute: executeCreateSale } = useAction(createSale, {
+    onError: ({ error: { validationErrors, serverError } }) => {
+      const flattendErrors = flattenValidationErrors(validationErrors);
+      toast.error(serverError ?? flattendErrors.formErrors[0]);
+    },
+    onSuccess: () => {
+      toast.success("Venda realizada com sucesso");
+      setsheetIsOpen(false);
+    },
+  });
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -111,30 +124,12 @@ export const UpsertSheetContent = ({ productOptions, products, setsheetIsOpen }:
   };
 
   const onSubmitSale = async () => {
-    try {
-      await createSale({
-        products: selectedProduct.map((product) => ({
-          id: product.id,
-          quantity: product.quantity,
-        })),
-      });
-
-      toast.success("Venda realizada com sucesso!");
-
-      // limpa o formulário
-      form.reset({
-        productId: "",
-        quantity: 1,
-      });
-
-      // limpa a lista de produtos adicionados
-      setSelectedProduct([]);
-
-      // fecha o modal/sheet
-      setsheetIsOpen(false);
-    } catch (error) {
-      toast.error("Erro ao finalizar a venda.");
-    }
+    executeCreateSale({
+      products: selectedProduct.map((product) => ({
+        id: product.id,
+        quantity: product.quantity,
+      })),
+    });
   };
 
   return (
