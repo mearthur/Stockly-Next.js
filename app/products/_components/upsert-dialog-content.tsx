@@ -1,27 +1,11 @@
 "use client";
 
 import { upsertProduct } from "@/app/_actions/products/upsert-products/create-products";
-import {
-  upsertProductSchema,
-  UpsertProductSchema,
-} from "@/app/_actions/products/upsert-products/products";
+import { upsertProductSchema, UpsertProductSchema } from "@/app/_actions/products/upsert-products/products";
 import { AlertDialogHeader } from "@/app/_components/ui/alert-dialog";
 import { Button } from "@/app/_components/ui/button";
-import {
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogTitle,
-} from "@/app/_components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/app/_components/ui/form";
+import { DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle } from "@/app/_components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/app/_components/ui/form";
 import { Input } from "@/app/_components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2Icon } from "lucide-react";
@@ -33,10 +17,7 @@ interface UpsertProductDialogContentPage {
   onSuccess?: () => void;
 }
 
-export const UpsertProductContent = ({
-  onSuccess,
-  defaultValues,
-}: UpsertProductDialogContentPage) => {
+export const UpsertProductContent = ({ onSuccess, defaultValues }: UpsertProductDialogContentPage) => {
   const form = useForm<UpsertProductSchema>({
     shouldUnregister: true,
     resolver: zodResolver(upsertProductSchema),
@@ -93,9 +74,7 @@ export const UpsertProductContent = ({
                     prefix="R$ "
                     allowNegative={false}
                     customInput={Input}
-                    onValueChange={(values) =>
-                      field.onChange(values.floatValue)
-                    }
+                    onValueChange={(values) => field.onChange(values.floatValue)}
                     {...field}
                     onChange={() => {}}
                   />
@@ -111,11 +90,7 @@ export const UpsertProductContent = ({
               <FormItem>
                 <FormLabel>stock</FormLabel>
                 <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="Digite o stock do produto"
-                    {...field}
-                  />
+                  <Input type="number" placeholder="Digite o stock do produto" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -127,14 +102,8 @@ export const UpsertProductContent = ({
                 Cancelar
               </Button>
             </DialogClose>
-            <Button
-              type="submit"
-              disabled={form.formState.isSubmitting}
-              className="gap-1.5"
-            >
-              {form.formState.isSubmitting && (
-                <Loader2Icon className="animate-spin" size={16} />
-              )}
+            <Button type="submit" disabled={form.formState.isSubmitting} className="gap-1.5">
+              {form.formState.isSubmitting && <Loader2Icon className="animate-spin" size={16} />}
               Salvar
             </Button>
           </DialogFooter>
