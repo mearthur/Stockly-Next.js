@@ -1,7 +1,7 @@
 "use client";
 
-import { upsertProduct } from "@/app/_actions/products/upsert-products/create-products";
-import { upsertProductSchema, UpsertProductSchema } from "@/app/_actions/products/upsert-products/products";
+import { upsertProduct } from "@/app/_actions/products/upsert-products";
+import { UpsertProductSchema, upsertProductSchema } from "@/app/_actions/products/upsert-products/schema";
 import { AlertDialogHeader } from "@/app/_components/ui/alert-dialog";
 import { Button } from "@/app/_components/ui/button";
 import { DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle } from "@/app/_components/ui/dialog";
@@ -9,19 +9,32 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/app/_components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2Icon } from "lucide-react";
+import { useAction } from "next-safe-action/hooks";
+import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
+import { toast } from "sonner";
 
 interface UpsertProductDialogContentPage {
   defaultValues?: UpsertProductSchema;
-  onSuccess?: () => void;
+  setDialogIsOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export const UpsertProductContent = ({ onSuccess, defaultValues }: UpsertProductDialogContentPage) => {
+export const UpsertProductContent = ({ setDialogIsOpen, defaultValues }: UpsertProductDialogContentPage) => {
+  const { execute: executeUpsertProduct } = useAction(upsertProduct, {
+    onSuccess: () => {
+      toast.success("Produto salvo com sucesso.");
+      setDialogIsOpen(false);
+    },
+    onError: () => {
+      toast.error("Ocorreu um error ao salvar o produto.");
+    },
+  });
   const form = useForm<UpsertProductSchema>({
     shouldUnregister: true,
     resolver: zodResolver(upsertProductSchema),
     defaultValues: defaultValues ?? {
+      id: "",
       name: "",
       price: 0,
       stock: 1,
@@ -30,13 +43,8 @@ export const UpsertProductContent = ({ onSuccess, defaultValues }: UpsertProduct
 
   const isEditing = !!defaultValues;
 
-  const onSubmit = async (data: UpsertProductSchema) => {
-    try {
-      await upsertProduct({ ...data, id: defaultValues?.id });
-      onSuccess?.();
-    } catch (error) {
-      console.error(error);
-    }
+  const onSubmit = (data: UpsertProductSchema) => {
+    executeUpsertProduct(data);
   };
   return (
     <DialogContent>

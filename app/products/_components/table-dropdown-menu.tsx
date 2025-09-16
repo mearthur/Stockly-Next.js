@@ -1,7 +1,4 @@
-import {
-  AlertDialog,
-  AlertDialogTrigger,
-} from "@/app/_components/ui/alert-dialog";
+import { AlertDialog, AlertDialogTrigger } from "@/app/_components/ui/alert-dialog";
 import { Button } from "@/app/_components/ui/button";
 import { Dialog, DialogTrigger } from "@/app/_components/ui/dialog";
 import {
@@ -12,12 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
-import {
-  ClipboardCopyIcon,
-  EditIcon,
-  MoreHorizontalIcon,
-  TrashIcon,
-} from "lucide-react";
+import { ClipboardCopyIcon, EditIcon, MoreHorizontalIcon, TrashIcon } from "lucide-react";
 import { useState } from "react";
 import { UpsertProductContent } from "./upsert-dialog-content";
 import { DeleteProductDialogContent } from "./delete-dialog";
@@ -27,13 +19,11 @@ interface ProductTableDropdownMenuProps {
   product: Product;
 }
 
-export const ProductTableDropdownMenu = ({
-  product,
-}: ProductTableDropdownMenuProps) => {
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
+export const ProductTableDropdownMenu = ({ product }: ProductTableDropdownMenuProps) => {
+  const [editDialogOpen, setEditDialogIsOpen] = useState(false);
   return (
     <AlertDialog>
-      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogIsOpen}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost">
@@ -43,10 +33,7 @@ export const ProductTableDropdownMenu = ({
           <DropdownMenuContent>
             <DropdownMenuLabel>Ações</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="gap-1.5"
-              onClick={() => navigator.clipboard.writeText(product.id)}
-            >
+            <DropdownMenuItem className="gap-1.5" onClick={() => navigator.clipboard.writeText(product.id)}>
               <ClipboardCopyIcon size={16} />
               Copiar Id
             </DropdownMenuItem>
@@ -71,7 +58,7 @@ export const ProductTableDropdownMenu = ({
             price: Number(product.price),
             stock: product.stock,
           }}
-          onSuccess={() => setEditDialogOpen(false)}
+          setDialogIsOpen={setEditDialogIsOpen}
         />
         <DeleteProductDialogContent productId={product.id} />
       </Dialog>
