@@ -44,7 +44,7 @@ export const UpsertProductContent = ({ setDialogIsOpen, defaultValues }: UpsertP
   const isEditing = !!defaultValues;
 
   const onSubmit = (data: UpsertProductSchema) => {
-    executeUpsertProduct(data);
+    executeUpsertProduct({ ...data, id: defaultValues?.id });
   };
   return (
     <DialogContent>
