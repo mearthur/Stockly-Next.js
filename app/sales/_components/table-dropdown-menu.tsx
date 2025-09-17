@@ -10,25 +10,23 @@ import {
   DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
 import { ClipboardCopyIcon, EditIcon, MoreHorizontalIcon, TrashIcon } from "lucide-react";
-import { useState } from "react";
-import { UpsertProductContent } from "./upsert-dialog-content";
-import { DeleteProductDialogContent } from "./delete-dialog";
-import { Product } from "@prisma/client";
+import { DeleteSaleDialogContent } from "./delete-dialog";
+import { Sale } from "@prisma/client";
 import { toast } from "sonner";
 
-interface ProductTableDropdownMenuProps {
-  product: Product;
+interface SalesTableDropdownMenuProps {
+  sale: Pick<Sale, "id">;
 }
 
-export const ProductTableDropdownMenu = ({ product }: ProductTableDropdownMenuProps) => {
-  const [editDialogOpen, setEditDialogIsOpen] = useState(false);
+export const SaleTableDropdownMenu = ({ sale }: SalesTableDropdownMenuProps) => {
   const handleCopyToCLipboardClick = () => {
-    navigator.clipboard.writeText(product.id);
+    navigator.clipboard.writeText(sale.id);
     toast.success("ID copiado para a área de transferência.");
   };
+
   return (
     <AlertDialog>
-      <Dialog open={editDialogOpen} onOpenChange={setEditDialogIsOpen}>
+      <Dialog>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost">
@@ -56,16 +54,7 @@ export const ProductTableDropdownMenu = ({ product }: ProductTableDropdownMenuPr
             </AlertDialogTrigger>
           </DropdownMenuContent>
         </DropdownMenu>
-        <UpsertProductContent
-          defaultValues={{
-            id: product.id,
-            name: product.name,
-            price: Number(product.price),
-            stock: product.stock,
-          }}
-          setDialogIsOpen={setEditDialogIsOpen}
-        />
-        <DeleteProductDialogContent productId={product.id} />
+        <DeleteSaleDialogContent sale={sale} />
       </Dialog>
     </AlertDialog>
   );
