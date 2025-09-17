@@ -37,7 +37,7 @@ export const UpsertProductContent = ({ setDialogIsOpen, defaultValues }: UpsertP
       id: "",
       name: "",
       price: 0,
-      stock: 1,
+      stock: 0,
     },
   });
 
