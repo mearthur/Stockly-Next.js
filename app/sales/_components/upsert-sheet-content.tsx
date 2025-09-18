@@ -17,16 +17,16 @@ import {
 } from "@/app/_components/ui/table";
 import { formatCurrency } from "@/app/_helpers/currency";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Product } from "@prisma/client";
 import { CheckIcon, PlusIcon } from "lucide-react";
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { UpsertSalesTableDropdownMenu } from "./upsert-table-dropdown-menu";
-import { createSale } from "@/app/_actions/sale/crete-sale";
+import { upsertSale } from "@/app/_actions/sale/upsert-sale";
 import { toast } from "sonner";
 import { useAction } from "next-safe-action/hooks";
 import { flattenValidationErrors } from "next-safe-action";
+import { ProductDto } from "@/app/_data-access/product/get-products";
 
 const formSchema = z.object({
   productId: z.string().uuid({
@@ -37,23 +37,30 @@ const formSchema = z.object({
 
 type FormSchema = z.infer<typeof formSchema>;
 
-interface UpsertSheetContentProps {
-  products: Product[];
-  productOptions: ComboboxOption[];
-  setsheetIsOpen: Dispatch<SetStateAction<boolean>>;
-}
-
-interface SelecetedProduct {
+interface SelectedProduct {
   id: string;
   name: string;
   price: number;
   quantity: number;
 }
+interface UpsertSheetContentProps {
+  saleId?: string;
+  products: ProductDto[];
+  productOptions: ComboboxOption[];
+  setsheetIsOpen: Dispatch<SetStateAction<boolean>>;
+  defaulSelectProducts?: SelectedProduct[];
+}
 
-export const UpsertSheetContent = ({ productOptions, products, setsheetIsOpen }: UpsertSheetContentProps) => {
-  const [selectedProduct, setSelectedProduct] = useState<SelecetedProduct[]>([]);
+export const UpsertSheetContent = ({
+  saleId,
+  productOptions,
+  products,
+  setsheetIsOpen,
+  defaulSelectProducts,
+}: UpsertSheetContentProps) => {
+  const [selectedProduct, setSelectedProduct] = useState<SelectedProduct[]>(defaulSelectProducts ?? []);
 
-  const { execute: executeCreateSale } = useAction(createSale, {
+  const { execute: executeUpsertSale } = useAction(upsertSale, {
     onError: ({ error: { validationErrors, serverError } }) => {
       const flattendErrors = flattenValidationErrors(validationErrors);
       toast.error(serverError ?? flattendErrors.formErrors[0]);
@@ -124,7 +131,8 @@ export const UpsertSheetContent = ({ productOptions, products, setsheetIsOpen }:
   };
 
   const onSubmitSale = async () => {
-    executeCreateSale({
+    executeUpsertSale({
+      id: saleId,
       products: selectedProduct.map((product) => ({
         id: product.id,
         quantity: product.quantity,
