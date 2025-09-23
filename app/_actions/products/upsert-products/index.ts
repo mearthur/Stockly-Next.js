@@ -15,6 +15,8 @@ export const upsertProduct = actionClient
       create: data,
     });
     revalidatePath("/products");
+    revalidatePath("/");
+    revalidatePath("/sales");
   });
 
 // export const upsertProduct = async (data: UpsertProductSchema) => {};

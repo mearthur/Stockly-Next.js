@@ -73,6 +73,7 @@ export const upsertSale = actionClient.schema(upsertSaleSchema).action(async ({ 
   });
   revalidatePath("/products");
   revalidatePath("/sales");
+  revalidatePath("/");
 });
 
 // export const upsertSale = async (data: UpsertSaleSchema) => {
