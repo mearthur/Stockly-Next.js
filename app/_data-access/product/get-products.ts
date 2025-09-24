@@ -14,8 +14,3 @@ export const getProducts = async (): Promise<ProductDto[]> => {
     status: product.stock > 0 ? "IN_STOCK" : "OUT_OF_STOCK",
   }));
 };
-
-// export const cachedGetProducts = unstable_cache(getProducts, ["getProducts"], {
-//   tags: ["get-products"],
-//   revalidate: 60,
-// });
