@@ -18,7 +18,7 @@ import {
 import { formatCurrency } from "@/app/_helpers/currency";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckIcon, PlusIcon } from "lucide-react";
-import { Dispatch, SetStateAction, useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { UpsertSalesTableDropdownMenu } from "./upsert-table-dropdown-menu";
@@ -44,6 +44,7 @@ interface SelectedProduct {
   quantity: number;
 }
 interface UpsertSheetContentProps {
+  isOpen: boolean;
   saleId?: string;
   products: ProductDto[];
   productOptions: ComboboxOption[];
@@ -52,6 +53,7 @@ interface UpsertSheetContentProps {
 }
 
 export const UpsertSheetContent = ({
+  isOpen,
   saleId,
   productOptions,
   products,
@@ -78,6 +80,15 @@ export const UpsertSheetContent = ({
       quantity: 1,
     },
   });
+  useEffect(() => {
+    if (!isOpen) {
+      form.reset();
+      setSelectedProduct([]);
+    }
+  }, [form, isOpen]);
+  useEffect(() => {
+    setSelectedProduct(defaulSelectProducts ?? []);
+  }, [defaulSelectProducts]);
 
   const onSubmit = (data: FormSchema) => {
     const selectedProduct = products.find((product) => product.id === data.productId);

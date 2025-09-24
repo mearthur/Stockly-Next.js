@@ -1,0 +1,23 @@
+import ProductStatusBadge from "@/app/_components/status-bagde";
+import { Badge } from "@/app/_components/ui/badge";
+import { MostSoldProductDto } from "@/app/_data-access/dashboard/get-dashboard";
+import { formatCurrency } from "@/app/_helpers/currency";
+
+interface MostSoldProductItemProps {
+  product: MostSoldProductDto;
+}
+
+export default function MostSoldProductItem({ product }: MostSoldProductItemProps) {
+  return (
+    <div className="item-center flex justify-between">
+      <div className="space-y-[6px]">
+        <ProductStatusBadge status={product.status} />
+        <p className="font-semibold">{product.name}</p>
+        <p className="font-medium text-slate-500">{formatCurrency(Number(product.price))}</p>
+      </div>
+      <div>
+        <p className="text-sm font-semibold">{product.totalSold} Vendido(s)</p>
+      </div>
+    </div>
+  );
+}
