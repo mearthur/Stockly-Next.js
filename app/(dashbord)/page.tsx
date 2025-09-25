@@ -15,9 +15,10 @@ import TotalRevenueCard from "./_components/total-revenue-card";
 import { Suspense } from "react";
 import { Skeleton } from "../_components/ui/skeleton";
 import TodayRevenueCard from "./_components/today-revenue-card";
+import TotalSalesCard from "./_components/total-sales-card";
 
 export default async function Home() {
-  const { totalProducts, totalSales, totalStock, totalLast14DaysRevenue, mostSoldProducts } = await getDashboard();
+  const { totalProducts, totalStock, totalLast14DaysRevenue, mostSoldProducts } = await getDashboard();
   return (
     <div className="m-8 flex w-full flex-col space-y-8 rounded-lg">
       <Header>
@@ -36,13 +37,9 @@ export default async function Home() {
         </Suspense>
       </div>
       <div className="grid grid-cols-3 gap-6">
-        <SummaryCard>
-          <SummaryCardIcon>
-            <CircleDollarSign size={20} />
-          </SummaryCardIcon>
-          <SummaryCardTitle>Vendas Totais</SummaryCardTitle>
-          <SummaryCardValue>{totalSales}</SummaryCardValue>
-        </SummaryCard>
+        <Suspense fallback={<SummaryCardSkeleton />}>
+          <TotalSalesCard />
+        </Suspense>
 
         <SummaryCard>
           <SummaryCardIcon>
