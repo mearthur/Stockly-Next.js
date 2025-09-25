@@ -1,6 +1,12 @@
 import { CircleDollarSign, DollarSign, PackageIcon, ShoppingBasketIcon } from "lucide-react";
 import Header, { HeaderLeft, HeaderSubtitle, HeaderTitle } from "../_components/header";
-import { SummaryCard, SummaryCardIcon, SummaryCardTitle, SummaryCardValue } from "./_components/summary-card";
+import {
+  SummaryCard,
+  SummaryCardIcon,
+  SummaryCardSkeleton,
+  SummaryCardTitle,
+  SummaryCardValue,
+} from "./_components/summary-card";
 import { getDashboard } from "../_data-access/dashboard/get-dashboard";
 import { formatCurrency } from "../_helpers/currency";
 import RevenueChart from "./_components/revenue-chart";
@@ -8,10 +14,10 @@ import MostSoldProductItem from "./_components/most-sold-product-item";
 import TotalRevenueCard from "./_components/total-revenue-card";
 import { Suspense } from "react";
 import { Skeleton } from "../_components/ui/skeleton";
+import TodayRevenueCard from "./_components/today-revenue-card";
 
 export default async function Home() {
-  const { todayRevenue, totalProducts, totalSales, totalStock, totalLast14DaysRevenue, mostSoldProducts } =
-    await getDashboard();
+  const { totalProducts, totalSales, totalStock, totalLast14DaysRevenue, mostSoldProducts } = await getDashboard();
   return (
     <div className="m-8 flex w-full flex-col space-y-8 rounded-lg">
       <Header>
@@ -21,17 +27,13 @@ export default async function Home() {
         </HeaderLeft>
       </Header>
       <div className="grid grid-cols-2 gap-6">
-        <Suspense fallback={<Skeleton className="rounded-xl bg-white bg-opacity-75" />}>
+        <Suspense fallback={<SummaryCardSkeleton />}>
           <TotalRevenueCard />
         </Suspense>
 
-        <SummaryCard>
-          <SummaryCardIcon>
-            <DollarSign size={20} />
-          </SummaryCardIcon>
-          <SummaryCardTitle>Receita Hoje</SummaryCardTitle>
-          <SummaryCardValue>{formatCurrency(todayRevenue)}</SummaryCardValue>
-        </SummaryCard>
+        <Suspense fallback={<SummaryCardSkeleton />}>
+          <TodayRevenueCard />
+        </Suspense>
       </div>
       <div className="grid grid-cols-3 gap-6">
         <SummaryCard>
