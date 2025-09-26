@@ -2,8 +2,8 @@ import { CircleDollarSign } from "lucide-react";
 import { SummaryCard, SummaryCardIcon, SummaryCardTitle, SummaryCardValue } from "./summary-card";
 import { getTotalSales } from "@/app/_data-access/dashboard/get-total-sale";
 
-export default function TotalSalesCard() {
-  const totalSales = getTotalSales();
+export default async function TotalSalesCard() {
+  const totalSales = await getTotalSales();
   return (
     <SummaryCard>
       <SummaryCardIcon>
