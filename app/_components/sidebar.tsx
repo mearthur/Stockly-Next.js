@@ -6,7 +6,7 @@ export default function Sidebar() {
     <div className="w-64 bg-white">
       {/* Image */}
       <div className="px-8 py-6">
-        <h1 className="text-2xl font-bold text-[#00A180]">STOCKLY</h1>
+        <h1 className="text-2xl font-extrabold text-slate-900">STOCKLY</h1>
       </div>
       {/* Buttons */}
       <div className="flex flex-col gap-2 p-2">
