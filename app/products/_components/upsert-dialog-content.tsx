@@ -11,9 +11,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2Icon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { Dispatch, SetStateAction } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
+import type { Resolver } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
 import { toast } from "sonner";
+
 interface UpsertProductDialogContentPage {
   defaultValues?: UpsertProductSchema;
   setDialogIsOpen: Dispatch<SetStateAction<boolean>>;
@@ -30,22 +32,43 @@ export const UpsertProductContent = ({ setDialogIsOpen, defaultValues }: UpsertP
     },
   });
 
+  // ===== Normalize defaultValues (evita strings vindas de API)
+  const normalizedDefaults: UpsertProductSchema = defaultValues
+    ? {
+        id: defaultValues.id,
+        name: defaultValues.name ?? "",
+        // se por acaso vier string, força number
+        price:
+          typeof (defaultValues as any).price === "string"
+            ? Number((defaultValues as any).price)
+            : ((defaultValues as any).price ?? 0),
+        stock:
+          typeof (defaultValues as any).stock === "string"
+            ? Number((defaultValues as any).stock)
+            : ((defaultValues as any).stock ?? 0),
+      }
+    : {
+        id: "",
+        name: "",
+        price: 0,
+        stock: 0,
+      };
+
+  // ===== Cast explícito do resolver para alinhar generics do RHF
+  const typedResolver = zodResolver(upsertProductSchema) as unknown as Resolver<UpsertProductSchema>;
+
   const form = useForm<UpsertProductSchema>({
     shouldUnregister: true,
-    resolver: zodResolver(upsertProductSchema),
-    defaultValues: defaultValues ?? {
-      id: "",
-      name: "",
-      price: 0,
-      stock: 0,
-    },
+    resolver: typedResolver,
+    defaultValues: normalizedDefaults,
   });
 
   const isEditing = !!defaultValues;
 
-  const onSubmit = (data: UpsertProductSchema) => {
+  const onSubmit: SubmitHandler<UpsertProductSchema> = (data) => {
     executeUpsertProduct({ ...data, id: defaultValues?.id });
   };
+
   return (
     <DialogContent>
       <Form {...form}>
@@ -54,6 +77,7 @@ export const UpsertProductContent = ({ setDialogIsOpen, defaultValues }: UpsertP
             <DialogTitle>{isEditing ? "Editar" : "Criar"} Produto</DialogTitle>
             <DialogDescription>Insira as Informações a baixo</DialogDescription>
           </AlertDialogHeader>
+
           <FormField
             control={form.control}
             name="name"
@@ -67,6 +91,7 @@ export const UpsertProductContent = ({ setDialogIsOpen, defaultValues }: UpsertP
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="price"
@@ -82,28 +107,44 @@ export const UpsertProductContent = ({ setDialogIsOpen, defaultValues }: UpsertP
                     prefix="R$ "
                     allowNegative={false}
                     customInput={Input}
-                    onValueChange={(values) => field.onChange(values.floatValue)}
-                    {...field}
-                    onChange={() => {}}
+                    value={field.value as any}
+                    // garante number (ou 0)
+                    onValueChange={(values) => field.onChange(values.floatValue ?? 0)}
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="stock"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>stock</FormLabel>
+                <FormLabel>Estoque</FormLabel>
                 <FormControl>
-                  <Input type="number" placeholder="Digite o stock do produto" {...field} />
+                  <Input
+                    type="number"
+                    value={field.value === null || field.value === undefined ? 0 : field.value} // mostra 0 por padrão
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      // permite apagar, mas mantém number
+                      field.onChange(val === "" ? "" : Number(val));
+                    }}
+                    onBlur={(e) => {
+                      // se o usuário deixou vazio, normaliza para 0
+                      if (e.target.value === "") {
+                        field.onChange(0);
+                      }
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="secondary" type="reset">
