@@ -12,7 +12,7 @@ export const deleteSale = actionClient.schema(deleteSaleSchema).action(async ({ 
         id,
       },
       include: {
-        saleProduct: true,
+        saleProducts: true,
       },
     });
     if (!sale) return;
@@ -21,7 +21,7 @@ export const deleteSale = actionClient.schema(deleteSaleSchema).action(async ({ 
         id,
       },
     });
-    for (const product of sale.saleProduct) {
+    for (const product of sale.saleProducts) {
       await trx.product.update({
         where: {
           id: product.productId,

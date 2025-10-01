@@ -75,6 +75,7 @@ export const SaleTableDropdownMenu = ({ sale, productOptions, products }: SalesT
           price: saleProduct.unitPrice,
           name: saleProduct.productName,
         }))}
+        isOpen={upsertSheetIsOpen}
       />
     </Sheet>
   );

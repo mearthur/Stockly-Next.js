@@ -21,14 +21,14 @@ export const getSales = async (): Promise<SaleDto[]> => {
   const sales = await db.sale.findMany({
     include: {
       saleProducts: {
-        include: { products: true },
+        include: { product: true },
       },
     },
   });
   return sales.map((sale) => ({
     id: sale.id,
     date: sale.date,
-    productNames: sale.saleProducts.map((saleProducts) => saleProducts.products.name).join(" • "),
+    productNames: sale.saleProducts.map((saleProducts) => saleProducts.product.name).join(" • "),
     totalAmount: sale.saleProducts.reduce(
       (acc, saleProducts) => acc + Number(saleProducts.quantity ?? 0) * Number(saleProducts.unitPrice ?? 0),
       0,
@@ -37,7 +37,7 @@ export const getSales = async (): Promise<SaleDto[]> => {
     saleProducts: sale.saleProducts.map(
       (saleProducts): SaleProductDto => ({
         productId: saleProducts.productId,
-        productName: saleProducts.products.name,
+        productName: saleProducts.product.name,
         quantity: saleProducts.quantity,
         unitPrice: Number(saleProducts.unitPrice),
       }),
