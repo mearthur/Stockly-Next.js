@@ -14,6 +14,7 @@ import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
 import { toast } from "sonner";
+import z from "zod";
 
 interface UpsertProductDialogContentPage {
   defaultValues?: UpsertProductSchema;
@@ -30,6 +31,14 @@ export const UpsertProductContent = ({ setDialogIsOpen, defaultValues }: UpsertP
       toast.error("Ocorreu um error ao salvar o produto.");
     },
   });
+
+  const upsertProductSchema = z.object({
+    id: z.string().optional(),
+    name: z.string(),
+    price: z.number(),
+    stock: z.number(),
+  });
+
   const form = useForm<UpsertProductSchema>({
     shouldUnregister: true,
     resolver: zodResolver(upsertProductSchema),

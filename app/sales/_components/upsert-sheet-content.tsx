@@ -73,12 +73,12 @@ export const UpsertSheetContent = ({
     },
   });
 
-  const form = useForm<FormSchema>({
+  const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       productId: "",
       quantity: 1,
-    },
+    } as FormSchema,
   });
   useEffect(() => {
     if (!isOpen) {
@@ -179,7 +179,12 @@ export const UpsertSheetContent = ({
               <FormItem>
                 <FormLabel>Quantidade</FormLabel>
                 <FormControl>
-                  <Input type="number" {...field} placeholder="Digite a quantidade" />
+                  <Input
+                    type="number"
+                    {...field}
+                    value={field.value as number} // cast aqui
+                    placeholder="Digite a quantidade"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
