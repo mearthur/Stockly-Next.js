@@ -8,6 +8,7 @@ interface SaleProductDto {
   unitPrice: number;
   productName: string;
 }
+
 export interface SaleDto {
   id: string;
   productNames: string;
@@ -28,24 +29,19 @@ export const getSales = async (): Promise<SaleDto[]> => {
   return sales.map((sale) => ({
     id: sale.id,
     date: sale.date,
-    productNames: sale.saleProducts.map((saleProducts) => saleProducts.product.name).join(" • "),
+    productNames: sale.saleProducts.map((saleProduct) => saleProduct.product.name).join(" • "),
     totalAmount: sale.saleProducts.reduce(
-      (acc, saleProducts) => acc + Number(saleProducts.quantity ?? 0) * Number(saleProducts.unitPrice ?? 0),
+      (acc, saleProduct) => acc + saleProduct.quantity * Number(saleProduct.unitPrice),
       0,
     ),
-    totalProducts: sale.saleProducts.reduce((acc, saleProducts) => acc + Number(saleProducts.quantity ?? 0), 0),
+    totalProducts: sale.saleProducts.reduce((acc, saleProduct) => acc + saleProduct.quantity, 0),
     saleProducts: sale.saleProducts.map(
-      (saleProducts): SaleProductDto => ({
-        productId: saleProducts.productId,
-        productName: saleProducts.product.name,
-        quantity: saleProducts.quantity,
-        unitPrice: Number(saleProducts.unitPrice),
+      (saleProduct): SaleProductDto => ({
+        productId: saleProduct.productId,
+        productName: saleProduct.product.name,
+        quantity: saleProduct.quantity,
+        unitPrice: Number(saleProduct.unitPrice),
       }),
     ),
   }));
 };
-
-// export const cachedGetSales = unstable_cache(getSales, ["getSales"], {
-//   tags: ["get-sale"],
-//   revalidate: 60,
-// });
