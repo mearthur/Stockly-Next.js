@@ -3,7 +3,6 @@
     "next/core-web-vitals",
     "next/typescript",
     "plugin:react/recommended",
-    "standard",
     "plugin:@typescript-eslint/recommended",
     "next/core-web-vitals",
     "plugin:prettier/recommended"
@@ -20,23 +19,19 @@
     "space-before-function-paren": "off",
     "no-useless-constructor": "off",
     "react/display-name": "off",
-    "import-helpers/order-imports": [
-      "warn",
-      {
-        "newlinesBetween": "always",
-        "groups": [
-          ["module", "/^@/"],
-          ["/utils/", "/services/"],
-          ["/components/", "/contexts/"],
-          "/public/",
-          "/styles/",
-          ["parent", "sibling", "index"]
-        ],
-        "alphabetize": {
-          "order": "asc",
-          "ignoreCase": true
-        }
-      }
-    ]
+    "import-helpers/order-imports": "off",
+    "newlinesBetween": "always",
+    "groups": [
+      ["module", "/^@/"],
+      ["/utils/", "/services/"],
+      ["/components/", "/contexts/"],
+      "/public/",
+      "/styles/",
+      ["parent", "sibling", "index"]
+    ],
+    "alphabetize": {
+      "order": "asc",
+      "ignoreCase": true
+    }
   }
 }
