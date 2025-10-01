@@ -20,7 +20,7 @@ export interface SaleDto {
 export const getSales = async (): Promise<SaleDto[]> => {
   const sales = await db.sale.findMany({
     include: {
-      saleProduct: {
+      saleProducts: {
         include: { products: true },
       },
     },
@@ -28,18 +28,18 @@ export const getSales = async (): Promise<SaleDto[]> => {
   return sales.map((sale) => ({
     id: sale.id,
     date: sale.date,
-    productNames: sale.saleProduct.map((saleProduct) => saleProduct.products.name).join(" • "),
-    totalAmount: sale.saleProduct.reduce(
+    productNames: sale.saleProducts.map((saleProducts) => saleProducts.products.name).join(" • "),
+    totalAmount: sale.saleProducts.reduce(
       (acc, saleProducts) => acc + Number(saleProducts.quantity ?? 0) * Number(saleProducts.unitPrice ?? 0),
       0,
     ),
-    totalProducts: sale.saleProduct.reduce((acc, saleProducts) => acc + Number(saleProducts.quantity ?? 0), 0),
-    saleProducts: sale.saleProduct.map(
-      (saleProduct): SaleProductDto => ({
-        productId: saleProduct.productId,
-        productName: saleProduct.products.name,
-        quantity: saleProduct.quantity,
-        unitPrice: Number(saleProduct.unitPrice),
+    totalProducts: sale.saleProducts.reduce((acc, saleProducts) => acc + Number(saleProducts.quantity ?? 0), 0),
+    saleProducts: sale.saleProducts.map(
+      (saleProducts): SaleProductDto => ({
+        productId: saleProducts.productId,
+        productName: saleProducts.products.name,
+        quantity: saleProducts.quantity,
+        unitPrice: Number(saleProducts.unitPrice),
       }),
     ),
   }));
